@@ -6,12 +6,14 @@ module YAMLConfig
 
   class Parser
 
-    attr_reader :path, :pattern, :environment
+    attr_reader :environment
+    attr_accessor :path, :main, :extra
 
-    def initialize(path, environment)
+    def initialize(path, args = {})
       @path = path
-      @pattern = '*.yml'
-      self.environment = environment
+      @main = args[:main] || 'config.yml'
+      @extra = args[:extra] || 'config.*.yml'
+      self.environment = args[:env] || 'development'
     end
 
     def load
@@ -25,8 +27,13 @@ module YAMLConfig
       @environment = env
     end
 
+    # Get the path for all the configuration files. The main file is
+    # put first
     def find_config_files
-      Dir.glob(File.join(@path, @pattern))
+      main = File.join(@path, @main)
+      raise ArgumentError.new("Main config file #{main} does not exist") unless File.exists? main
+      extra = Dir.glob(File.join(@path, @extra))
+      ([main] + extra).uniq
     end
 
     private
