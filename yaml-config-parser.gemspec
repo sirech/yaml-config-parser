@@ -4,7 +4,7 @@ require 'yaml-config-parser'
 
 Gem::Specification.new do |s|
   s.name        = 'yaml-config-parser'
-  s.version     = YAMLConfigParser::VERSION
+  s.version     = YAMLConfig::VERSION
   s.authors     = ['Mario Fernandez']
 
   s.homepage    = 'http://github.com/sirech/parse-yaml-config'
