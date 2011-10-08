@@ -1,0 +1,32 @@
+defaults: &defaults
+  is_global: true
+  
+local:
+  defaults: &local_defaults
+    <<: *defaults
+
+    level: DEBUG
+
+  development:
+    <<: *local_defaults
+
+  test:
+    <<: *local_defaults
+
+integration:
+  defaults: &integration_defaults
+    <<: *defaults
+
+    level: WARN
+
+  test:
+    <<: *integration_defaults
+
+  production:
+    <<: *integration_defaults
+
+live:
+  production:
+    <<: *defaults
+
+    level: INFO

@@ -1,0 +1,37 @@
+defaults: &defaults
+  database: db
+  port: 27017
+  
+local:
+  defaults: &local_defaults
+    <<: *defaults
+
+    host: localhost
+
+  development:
+    <<: *local_defaults
+
+  test:
+    <<: *local_defaults
+
+    database: db_test
+
+integration:
+  defaults: &integration_defaults
+    <<: *defaults
+
+    host: integration.host.com
+
+  test:
+    <<: *integration_defaults
+
+    database: db_test
+
+  production:
+    <<: *integration_defaults
+
+live:
+  production:
+    <<: *defaults
+
+    host: host.com
