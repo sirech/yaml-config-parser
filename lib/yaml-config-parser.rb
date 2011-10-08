@@ -6,13 +6,23 @@ module YAMLConfig
 
   class Parser
 
-    def initialize(path)
+    attr_reader :path, :pattern, :environment
+    
+    def initialize(path, env)
       @path = path
       @pattern = '*.yml'
+      environment = env
     end
 
     def load
       OpenStruct.new({})
+    end
+
+    def environment=(env)
+      if env.class == String
+        env = [env]
+      end
+      @environment = env
     end
 
     private
