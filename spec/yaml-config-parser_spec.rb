@@ -39,4 +39,18 @@ describe YAMLConfig do
     lambda { @parser.send(:file_to_hash, @files.first)}.should raise_error ArgumentError
   end
 
+  it 'should fail when trying to use the same key twice for the hash' do
+    lambda { @parser.send(:add_to_hash, { 'a' => 1}, 'a', {})}.should raise_error ArgumentError
+  end
+
+  it 'should merge all configuration files to one hash' do
+    @parser.send(:merge_config_files).keys.should == ['is_global', 'db', 'logging']
+  end
+
+  it 'should produce a valid OpenStruct object with all the data from the config files' do
+    cfg = @parser.load
+    cfg.is_global.should == true
+    cfg.db.should == {"database"=>"db", "port"=>27017, "host"=>"localhost"}
+    cfg.logging.should == {"is_global"=>true, "level"=>"DEBUG"}
+  end
 end

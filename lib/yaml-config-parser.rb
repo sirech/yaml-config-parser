@@ -11,13 +11,13 @@ module YAMLConfig
 
     def initialize(path, args = {})
       @path = path
-      @main = args[:main] || 'config.yml'
-      @extra = args[:extra] || 'config.*.yml'
+      @main = 'config.yml'
+      @extra = 'config.*.yml'
       self.environment = args[:env] || 'development'
     end
 
     def load
-      OpenStruct.new({})
+      OpenStruct.new merge_config_files
     end
 
     def environment=(env)
@@ -43,6 +43,25 @@ module YAMLConfig
       @environment.each do |env|
         h = h[env]
         raise ArgumentError.new("Environment #{env} does not exist in the file. Are you sure the order of the environments is correct?") if h.nil?
+      end
+      h
+    end
+
+    def choose_key_for_extra_file file_name
+      file_name.gsub(/.yml$/, '').split('.')[-1]
+    end
+
+    def add_to_hash(hash, key, extra)
+      hash.merge!({key => extra}) do |key,_,_|
+        raise ArgumentError.new("The key #{key} is duplicated")
+      end
+    end
+
+    def merge_config_files
+      files = find_config_files
+      h = file_to_hash(files.shift)
+      files.each do |file_name|
+        add_to_hash(h, choose_key_for_extra_file(file_name), file_to_hash(file_name))
       end
       h
     end
