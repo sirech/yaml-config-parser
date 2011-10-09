@@ -2,20 +2,32 @@ require 'yaml'
 require 'ostruct'
 
 module YAMLConfig
-  VERSION = '0.1.1'
+  VERSION = '0.1.3'
 
   class Parser
 
     attr_reader :environment
     attr_accessor :path, :main, :extra
 
+    # Instantiate a new configuration parser.
+    #
+    # path - The directory where the configuration files are stored
+    # :env - (optional) The list of environments used to choose the
+    #        right keys. If there is only one environment it can be passed as
+    #        a String. Default is 'development'
     def initialize(path, args = {})
       @path = path
+      # TODO: make main and extra files configurable
       @main = 'config.yml'
       @extra = 'config.*.yml'
       self.environment = args[:env] || 'development'
     end
 
+    # Loads all the config files that can be found under the
+    # given path, chooses the right environments, and merges them
+    # into a new OpenStruct object
+    #
+    # Returns an OpenStruct with the configuration keys
     def load
       OpenStruct.new merge_config_files
     end
@@ -27,8 +39,11 @@ module YAMLConfig
       @environment = env
     end
 
-    # Get the path for all the configuration files. The main file is
+    # Gets the path for all the configuration files. The main file is
     # put first
+    #
+    # Returns an Array of Strings, each one being a path to a
+    # configuration file.
     def find_config_files
       main = File.join(@path, @main)
       raise ArgumentError.new("Main config file #{main} does not exist") unless File.exists? main
